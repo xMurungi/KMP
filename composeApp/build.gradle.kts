@@ -7,6 +7,8 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
+//    Kotlin Serialization
+    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
@@ -33,6 +35,7 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+            //            implementation(libs.decompose)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -43,7 +46,23 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
+
+//            Date time library
             implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
+
+//            Navigation library for Compose Multiplatform
+//            implementation(libs.decomp)
+            implementation(libs.voyager.navigator)
+            // TabNavigator
+            implementation(libs.voyager.tab.navigator)
+            // Transitions
+            implementation(libs.voyager.transitions)
+            implementation(libs.decompose.jetbrains)
+            implementation("org.jetbrains.androidx.navigation:navigation-compose:2.7.0-alpha07")
+
+
+//            Kotlin Serialization
+            implementation(libs.kotlinx.serialization.json)
         }
     }
 }

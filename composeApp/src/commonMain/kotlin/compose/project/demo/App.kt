@@ -1,9 +1,13 @@
 package compose.project.demo
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -11,6 +15,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomAppBar
+import androidx.compose.material.BottomNavigation
+import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.DropdownMenu
@@ -37,7 +43,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import composedemo.composeapp.generated.resources.Res
+import androidx.navigation.Navigation
+import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.Navigator
+import cafe.adriel.voyager.navigator.tab.CurrentTab
+import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
+import cafe.adriel.voyager.navigator.tab.Tab
+import cafe.adriel.voyager.navigator.tab.TabNavigator
+import cafe.adriel.voyager.transitions.SlideTransition
+import compose.project.demo.screens.details.DetailsScreen
+import compose.project.demo.screens.home.HomeScreen
+import compose.project.demo.tab.home.HomeTab
+import compose.project.demo.tab.profile.ProfileTab
+import compose.project.demo.tab.settings.SettingsTab
 import composedemo.composeapp.generated.resources.compose_multiplatform
 import composedemo.composeapp.generated.resources.eg
 import composedemo.composeapp.generated.resources.fr
@@ -50,9 +69,13 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+
+import composedemo.composeapp.generated.resources.Res
+import composedemo.composeapp.generated.resources.compose_multiplatform
 
 data class Country(
     val name: String,
@@ -87,103 +110,183 @@ fun App(
     countries: List<Country> = defaultCountries
 ) {
     MaterialTheme {
+        val navigator = LocalNavigator.current
 
-        var showCountries by remember { mutableStateOf(false) }
-        var timeAtLocation by remember { mutableStateOf("No location selected") }
+        // Track if the current screen should hide the bottom bar
+        val isBottomBarVisible = remember {
+            mutableStateOf(true) // Initially, the bottom bar is visible
+        }
 
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    modifier = Modifier,
-                    title = {
-                        Text(
-                            "My App",
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    },
-                    actions = {},
-//                    scrollBehavior = scrollBehavior,
-                )
+        var isVisible by remember { mutableStateOf(true) }
+        val homeTab = remember {
+            HomeTab(
+                onNavigator = { isVisible = it }
+            )
+        }
+
+        TabNavigator(
+            tab = homeTab
+        ) { tabNavigator ->
+            // Access the current tab
+            val currentTab = tabNavigator.current
+
+//            val currentScreen = LocalNavigator.current?.lastItem
+
+            // Update isBottomBarVisible based on current screen type
+            if (navigator?.lastItem is DetailsScreen) {
+                isBottomBarVisible.value = false
+            } else {
+                isBottomBarVisible.value = true
             }
-        ) {
-            LazyColumn {
-                item {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally
+
+            Scaffold(
+                bottomBar = {
+                    AnimatedVisibility(
+                        visible = isVisible,
+                        enter = slideInVertically { height ->
+                            height
+                        },
+                        exit = slideOutVertically { height ->
+                            height
+                        }
                     ) {
-                        Text(
-                            text = timeAtLocation,
-                            modifier = Modifier
-                                .padding(20.dp)
-                                .fillMaxWidth()
-                                .align(Alignment.CenterHorizontally),
-                            fontSize = 20.sp,
-                            textAlign = TextAlign.Center
-                        )
-
-                        Row(
-                            modifier = Modifier
-                                .padding(start = 20.dp, top = 10.dp)
-                        ) {
-                            DropdownMenu(
-                                expanded = showCountries,
-                                onDismissRequest = { showCountries = !showCountries }
-                            ) {
-                                countries.forEach { (name, zone, image) ->
-                                    DropdownMenuItem(
-                                        onClick = {
-                                            timeAtLocation = currentTimeAt(name, zone)
-                                            showCountries = false
-                                        }
-                                    ) {
-                                        Row(
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            Image(
-                                                painterResource(image),
-                                                modifier = Modifier
-                                                    .size(50.dp)
-                                                    .padding(end = 10.dp),
-                                                contentDescription = "$name flag"
-                                            )
-                                            Text(name)
-                                        }
-
-                                    }
-                                }
-
-                            }
+                        BottomNavigation {
+                            TabNavigationItem(homeTab)
+                            TabNavigationItem(ProfileTab)
+                            TabNavigationItem(SettingsTab)
                         }
-
-                        Button(
-                            onClick = { showCountries = !showCountries },
-                        ) {
-                            Text("Select location")
-                        }
-
-                        PostView()
-                        PostView()
-                        PostView()
-                        PostView()
-                        PostView()
                     }
                 }
+            ) {
+                CurrentTab()
             }
         }
+
+//        Navigator(HomeScreen()) { navigator ->
+//            SlideTransition(navigator)
+//        }
     }
 }
 
 @Composable
+fun RowScope.TabNavigationItem(
+    tab: Tab
+) {
+    val tabNavigator = LocalTabNavigator.current
+
+    BottomNavigationItem(
+        selected = tabNavigator.current == tab,
+        onClick = { tabNavigator.current = tab },
+        label = { Text(tab.options.title) },
+        icon = {  }
+    )
+
+}
+
+@Composable
+fun EntryScreen(
+    modifier: Modifier = Modifier,
+    countries: List<Country> = defaultCountries
+) {
+    var showCountries by remember { mutableStateOf(false) }
+    var timeAtLocation by remember { mutableStateOf("No location selected") }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                modifier = Modifier,
+                title = {
+                    Text(
+                        "My App",
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                },
+                actions = {},
+//                    scrollBehavior = scrollBehavior,
+            )
+        }
+    ) {
+        LazyColumn {
+            item {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = timeAtLocation,
+                        modifier = Modifier
+                            .padding(20.dp)
+                            .fillMaxWidth()
+                            .align(Alignment.CenterHorizontally),
+                        fontSize = 20.sp,
+                        textAlign = TextAlign.Center
+                    )
+
+                    Row(
+                        modifier = Modifier
+                            .padding(start = 20.dp, top = 10.dp)
+                    ) {
+                        DropdownMenu(
+                            expanded = showCountries,
+                            onDismissRequest = { showCountries = !showCountries }
+                        ) {
+                            countries.forEach { (name, zone, image) ->
+                                DropdownMenuItem(
+                                    onClick = {
+                                        timeAtLocation = currentTimeAt(name, zone)
+                                        showCountries = false
+                                    }
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Image(
+                                            painterResource(image),
+                                            modifier = Modifier
+                                                .size(50.dp)
+                                                .padding(end = 10.dp),
+                                            contentDescription = "$name flag"
+                                        )
+                                        Text(name)
+                                    }
+
+                                }
+                            }
+
+                        }
+                    }
+
+                    Button(
+                        onClick = { showCountries = !showCountries },
+                    ) {
+                        Text("Select location")
+                    }
+
+//                    PostView()
+//                    PostView()
+//                    PostView()
+//                    PostView()
+//                    PostView()
+                }
+            }
+        }
+    }
+
+}
+
+@Composable
 fun PostView(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    navigator: Navigator?,
+    onNavigator: (isRoot: Boolean) -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(10.dp),
+            .padding(10.dp)
+            .clickable{ navigator?.push(DetailsScreen(id = -1, onNavigator)) },
 //        backgroundColor = Color.LightGray,
         shape = RoundedCornerShape(20.dp),
         elevation = 10.dp

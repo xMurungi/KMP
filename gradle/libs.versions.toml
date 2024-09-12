@@ -1,5 +1,5 @@
 [versions]
-agp = "8.5.2"
+agp = "8.6.0"
 android-compileSdk = "34"
 android-minSdk = "24"
 android-targetSdk = "34"
@@ -14,8 +14,13 @@ androidx-test-junit = "1.2.1"
 compose-plugin = "1.6.11"
 junit = "4.13.2"
 kotlin = "2.0.20"
+extensionsComposeJetbrains = "2.1.4-compose-experimental"
+decompose = "2.2.0-alpha03"
+serialization = "1.6.3"
+voyagerVersion = "1.1.0-beta02"
 
 [libraries]
+decompose-jetbrains = { module = "com.arkivanov.decompose:extensions-compose-jetbrains", version.ref = "extensionsComposeJetbrains" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -28,6 +33,10 @@ androidx-constraintlayout = { group = "androidx.constraintlayout", name = "const
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 androidx-lifecycle-viewmodel = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization"}
+voyager-navigator = { module = "cafe.adriel.voyager:voyager-navigator", version.ref = "voyagerVersion" }
+voyager-tab-navigator = { module = "cafe.adriel.voyager:voyager-tab-navigator", version.ref = "voyagerVersion" }
+voyager-transitions = { module = "cafe.adriel.voyager:voyager-transitions", version.ref = "voyagerVersion" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
@@ -35,3 +44,4 @@ androidLibrary = { id = "com.android.library", version.ref = "agp" }
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
