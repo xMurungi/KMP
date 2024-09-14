@@ -1,10 +1,13 @@
 package compose.project.demo
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -21,11 +24,14 @@ import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -152,13 +158,19 @@ fun App(
                     ) {
                         BottomNavigation {
                             TabNavigationItem(homeTab)
-                            TabNavigationItem(ProfileTab)
                             TabNavigationItem(SettingsTab)
+                            TabNavigationItem(ProfileTab)
                         }
                     }
                 }
-            ) {
-                CurrentTab()
+            ) { paddingValues ->
+                // Apply padding to the content
+                Box(
+                    modifier = Modifier
+                        .padding(paddingValues)
+                ) {
+                    CurrentTab()
+                }
             }
         }
 

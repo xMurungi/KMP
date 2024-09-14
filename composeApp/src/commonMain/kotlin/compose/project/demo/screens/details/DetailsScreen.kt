@@ -1,5 +1,8 @@
 package compose.project.demo.screens.details
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.BottomNavigation
@@ -56,26 +59,30 @@ fun DetailsScreenView(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(text = "Details") },
-                navigationIcon = {
-                    IconButton(
-                        onClick = { navigator?.pop() }
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back button"
-                        )
-                    }
+            AnimatedVisibility(
+                visible = true,
+                enter = slideInVertically { height ->
+                    height
+                },
+                exit = slideOutVertically { height ->
+                    height
                 }
-            )
-        },
-//        bottomBar = {
-//            BottomNavigation {
-//                TabNavigationItem(ProfileTab)
-//                TabNavigationItem(SettingsTab)
-//            }
-//        }
+            ) {
+                TopAppBar(
+                    title = { Text(text = "Details") },
+                    navigationIcon = {
+                        IconButton(
+                            onClick = { navigator?.pop() }
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Back button"
+                            )
+                        }
+                    }
+                )
+            }
+        }
     ) {
 
         Box(

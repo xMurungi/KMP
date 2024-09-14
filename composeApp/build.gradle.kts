@@ -36,6 +36,7 @@ kotlin {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
             //            implementation(libs.decompose)
+            implementation(libs.ktor.client.okhttp)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -60,9 +61,14 @@ kotlin {
             implementation(libs.decompose.jetbrains)
             implementation("org.jetbrains.androidx.navigation:navigation-compose:2.7.0-alpha07")
 
-
 //            Kotlin Serialization
             implementation(libs.kotlinx.serialization.json)
+
+//            Ktor
+            implementation(libs.bundles.ktor)
+        }
+        nativeMain.dependencies {
+            implementation(libs.ktor.client.darwin)
         }
     }
 }
