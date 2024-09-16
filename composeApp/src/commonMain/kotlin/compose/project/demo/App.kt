@@ -28,13 +28,16 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -58,6 +61,7 @@ import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabNavigator
 import cafe.adriel.voyager.transitions.SlideTransition
+import compose.project.demo.networking.InsultCensorClient
 import compose.project.demo.screens.details.DetailsScreen
 import compose.project.demo.screens.home.HomeScreen
 import compose.project.demo.tab.home.HomeTab
@@ -110,73 +114,78 @@ val defaultCountries = listOf(
     Country("Kenya", TimeZone.of("Africa/Nairobi"), Res.drawable.ke)
 )
 
+val LocalInsultCensorClient = compositionLocalOf<InsultCensorClient> { error("No client provided") }
+
 @Composable
 @Preview
 fun App(
+    client: InsultCensorClient,
     countries: List<Country> = defaultCountries
 ) {
-    MaterialTheme {
-        val navigator = LocalNavigator.current
+    CompositionLocalProvider(LocalInsultCensorClient provides client) {
+        MaterialTheme {
+            val navigator = LocalNavigator.current
 
-        // Track if the current screen should hide the bottom bar
-        val isBottomBarVisible = remember {
-            mutableStateOf(true) // Initially, the bottom bar is visible
-        }
+            // Track if the current screen should hide the bottom bar
+            val isBottomBarVisible = remember {
+                mutableStateOf(true) // Initially, the bottom bar is visible
+            }
 
-        var isVisible by remember { mutableStateOf(true) }
-        val homeTab = remember {
-            HomeTab(
-                onNavigator = { isVisible = it }
-            )
-        }
+            var isVisible by remember { mutableStateOf(true) }
+            val homeTab = remember {
+                HomeTab(
+                    onNavigator = { isVisible = it }
+                )
+            }
 
-        TabNavigator(
-            tab = homeTab
-        ) { tabNavigator ->
-            // Access the current tab
-            val currentTab = tabNavigator.current
+            TabNavigator(
+                tab = homeTab
+            ) { tabNavigator ->
+                // Access the current tab
+                val currentTab = tabNavigator.current
 
 //            val currentScreen = LocalNavigator.current?.lastItem
 
-            // Update isBottomBarVisible based on current screen type
-            if (navigator?.lastItem is DetailsScreen) {
-                isBottomBarVisible.value = false
-            } else {
-                isBottomBarVisible.value = true
-            }
+                // Update isBottomBarVisible based on current screen type
+                if (navigator?.lastItem is DetailsScreen) {
+                    isBottomBarVisible.value = false
+                } else {
+                    isBottomBarVisible.value = true
+                }
 
-            Scaffold(
-                bottomBar = {
-                    AnimatedVisibility(
-                        visible = isVisible,
-                        enter = slideInVertically { height ->
-                            height
-                        },
-                        exit = slideOutVertically { height ->
-                            height
-                        }
-                    ) {
-                        BottomNavigation {
-                            TabNavigationItem(homeTab)
-                            TabNavigationItem(SettingsTab)
-                            TabNavigationItem(ProfileTab)
+                Scaffold(
+                    bottomBar = {
+                        AnimatedVisibility(
+                            visible = isVisible,
+                            enter = slideInVertically { height ->
+                                height
+                            },
+                            exit = slideOutVertically { height ->
+                                height
+                            }
+                        ) {
+                            BottomNavigation {
+                                TabNavigationItem(homeTab)
+                                TabNavigationItem(SettingsTab)
+                                TabNavigationItem(ProfileTab)
+                            }
                         }
                     }
-                }
-            ) { paddingValues ->
-                // Apply padding to the content
-                Box(
-                    modifier = Modifier
-                        .padding(paddingValues)
-                ) {
-                    CurrentTab()
+                ) { paddingValues ->
+                    // Apply padding to the content
+                    Surface(
+                        modifier = Modifier
+                            .padding(paddingValues)
+                    ) {
+                        CurrentTab()
+                    }
                 }
             }
-        }
 
 //        Navigator(HomeScreen()) { navigator ->
 //            SlideTransition(navigator)
 //        }
+        }
     }
 }
 

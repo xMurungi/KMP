@@ -5,12 +5,16 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import compose.project.demo.networking.InsultCensorClient
+import compose.project.demo.networking.createHttpClient
+import io.ktor.client.engine.okhttp.OkHttp
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,7 +41,17 @@ class MainActivity : ComponentActivity() {
                 isAppearanceLightStatusBars = !darkTheme
                 isAppearanceLightNavigationBars = !darkTheme
             }
-            App()
+
+            App(
+                client = remember {
+                    InsultCensorClient(
+                        createHttpClient(
+                            OkHttp.create()
+                        )
+                    )
+                }
+            )
+
         }
     }
 }
@@ -45,5 +59,13 @@ class MainActivity : ComponentActivity() {
 @Preview
 @Composable
 fun AppAndroidPreview() {
-    App()
+    App(
+        client = remember {
+            InsultCensorClient(
+                createHttpClient(
+                    OkHttp.create()
+                )
+            )
+        }
+    )
 }
