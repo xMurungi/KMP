@@ -305,7 +305,6 @@ fun PostView(
             .fillMaxWidth()
             .padding(10.dp)
             .clickable{ navigator?.push(DetailsScreen(id = -1, onNavigator)) },
-//        backgroundColor = Color.LightGray,
         shape = RoundedCornerShape(20.dp),
         elevation = 10.dp
     ) {
