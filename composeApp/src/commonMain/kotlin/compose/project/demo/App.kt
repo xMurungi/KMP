@@ -182,9 +182,6 @@ fun App(
                 }
             }
 
-//        Navigator(HomeScreen()) { navigator ->
-//            SlideTransition(navigator)
-//        }
         }
     }
 }
