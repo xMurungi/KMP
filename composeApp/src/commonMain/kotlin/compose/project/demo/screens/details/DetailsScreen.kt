@@ -39,7 +39,6 @@ data class DetailsScreen(
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.current
-//        val currentSubScreen = LocalNavigator.current?.lastItem
 
         DetailsScreenView(
             id = id,
