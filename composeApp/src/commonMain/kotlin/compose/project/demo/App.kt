@@ -1,13 +1,11 @@
 package compose.project.demo
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -15,28 +13,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.BottomAppBar
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,30 +34,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.Navigation
-import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.tab.CurrentTab
 import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabNavigator
-import cafe.adriel.voyager.transitions.SlideTransition
 import compose.project.demo.networking.InsultCensorClient
 import compose.project.demo.screens.details.DetailsScreen
-import compose.project.demo.screens.home.HomeScreen
 import compose.project.demo.tab.home.HomeTab
 import compose.project.demo.tab.profile.ProfileTab
-import compose.project.demo.tab.settings.SettingsTab
-import composedemo.composeapp.generated.resources.compose_multiplatform
+import compose.project.demo.tab.settings.PaymentsTab
 import composedemo.composeapp.generated.resources.eg
 import composedemo.composeapp.generated.resources.fr
 import composedemo.composeapp.generated.resources.id
@@ -79,13 +61,11 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 import composedemo.composeapp.generated.resources.Res
-import composedemo.composeapp.generated.resources.compose_multiplatform
 
 data class Country(
     val name: String,
@@ -166,7 +146,7 @@ fun App(
                         ) {
                             BottomNavigation {
                                 TabNavigationItem(homeTab)
-                                TabNavigationItem(SettingsTab)
+                                TabNavigationItem(PaymentsTab)
                                 TabNavigationItem(ProfileTab)
                             }
                         }
@@ -310,7 +290,9 @@ fun PostView(
     ) {
         Column(
             modifier = Modifier
-                .padding(10.dp)
+                .padding(10.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
                 painterResource(Res.drawable.student),
@@ -319,11 +301,33 @@ fun PostView(
                     .align(Alignment.CenterHorizontally),
             )
             Text(
-                "Card composable"
+                "John Doe"
             )
             Text(
-                "This is a text about me. This is a text about me. This is a text about me. This is a text about me."
+                text = "Amani Apartments",
+                fontWeight = FontWeight.Bold,
+                fontSize = 24.sp
             )
+            Text(
+                text = "House no. 1B"
+            )
+            Row(
+                modifier = modifier
+            ) {
+                Text(
+                    text = "Rent: "
+                )
+                Text(
+                    text = "14,000 Ksh."
+                )
+            }
+            Button(
+                onClick = {}
+            ) {
+                Text(
+                    text = "Pay Rent"
+                )
+            }
         }
     }
 }
